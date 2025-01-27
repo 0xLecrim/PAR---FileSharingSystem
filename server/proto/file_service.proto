@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package fileservice;
+
+service FileService {
+  // Upload a file to the server
+  rpc UploadFile (stream FileUploadRequest) returns (FileUploadResponse);
+  
+  // Download a file from the server
+  rpc DownloadFile (FileDownloadRequest) returns (stream FileDownloadResponse);
+  
+  // List all available files
+  rpc ListFiles (ListFilesRequest) returns (ListFilesResponse);
+  
+  // Delete a file from the server
+  rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse);
+}
+
+message FileUploadRequest {
+  oneof data {
+    FileInfo info = 1;
+    bytes chunk = 2;
+  }
+}
+
+message FileInfo {
+  string filename = 1;
+  string content_type = 2;
+}
+
+message FileUploadResponse {
+  string message = 1;
+  bool success = 2;
+  string file_id = 3;
+}
+
+message FileDownloadRequest {
+  string file_id = 1;
+}
+
+message FileDownloadResponse {
+  bytes chunk = 1;
+}
+
+message ListFilesRequest {}
+
+message ListFilesResponse {
+  repeated FileMetadata files = 1;
+}
+
+message FileMetadata {
+  string file_id = 1;
+  string filename = 2;
+  int64 size = 3;
+  string uploaded_at = 4;
+}
+
+message DeleteFileRequest {
+  string file_id = 1;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+  string message = 2;
+}
